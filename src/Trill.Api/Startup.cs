@@ -28,30 +28,23 @@ namespace Trill.Api
             // services.AddSingleton<IMessenger, MessengerV2>();
             services.Configure<ApiOptions>(_configuration.GetSection("api"));
             // services.AddHostedService<NotificationJob>();
-            services.AddSingleton<DummyMiddleware>();
+            services.AddSingleton<ErrorHandlerMiddleware>();
         }
 
         // Configure middleware
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            app.UseMiddleware<ErrorHandlerMiddleware>();
+            app.Use(async (ctx, next) =>
             {
-                app.UseDeveloperExceptionPage();
-            }
+                if (ctx.Request.Query.TryGetValue("token", out var token) && token == "secret")
+                {
+                    await ctx.Response.WriteAsync("Secret");
+                    return;
+                }
 
-            app.Use(async (context, next) =>
-            {
-                Console.WriteLine("I'm the first middleware");
                 await next();
             });
-            
-            app.Use(async (context, next) =>
-            {
-                Console.WriteLine("I'm the second middleware");
-                await next();
-            });
-
-            app.UseMiddleware<DummyMiddleware>();
 
             app.UseRouting();
             app.UseEndpoints(endpoints =>
