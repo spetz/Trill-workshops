@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Trill.Application.Commands;
 using Trill.Application.DTO;
+using Trill.Core.Exceptions;
 
 namespace Trill.Application.Services
 {
@@ -31,6 +32,11 @@ namespace Trill.Application.Services
             if (story is {})
             {
                 throw new Exception($"Story with ID: '{command.Id}' already exists.");
+            }
+
+            if (string.IsNullOrWhiteSpace(command.Title))
+            {
+                throw new MissingTitleException();
             }
         
             Stories.Add(new StoryDetailsDto
