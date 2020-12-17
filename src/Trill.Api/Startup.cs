@@ -1,13 +1,11 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Trill.Application.Services;
+using Trill.Application;
 using Trill.Infrastructure;
 
 namespace Trill.Api
@@ -24,11 +22,10 @@ namespace Trill.Api
         // Configure IoC container
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IMessenger, Messenger>();
-            // services.AddSingleton<IMessenger, MessengerV2>();
             services.Configure<ApiOptions>(_configuration.GetSection("api"));
             // services.AddHostedService<NotificationJob>();
             services.AddSingleton<ErrorHandlerMiddleware>();
+            services.AddApplication();
         }
 
         // Configure middleware
@@ -52,7 +49,6 @@ namespace Trill.Api
                 endpoints.MapGet("", context =>
                 {
                     var options = context.RequestServices.GetRequiredService<IOptions<ApiOptions>>();
-                    var messenger = context.RequestServices.GetRequiredService<IMessenger>();
                     return context.Response.WriteAsync("Hello world!");
                 });
                 
