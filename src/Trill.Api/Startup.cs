@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Trill.Application;
+using Trill.Application.Services;
 using Trill.Infrastructure;
 
 namespace Trill.Api
@@ -55,6 +56,7 @@ namespace Trill.Api
                 endpoints.MapGet("stories/{storyId:guid}", async context =>
                 {
                     var storyId = Guid.Parse(context.Request.RouteValues["storyId"].ToString());
+                    var storyService = context.RequestServices.GetRequiredService<IStoryService>();
                     if (storyId == Guid.Empty)
                     {
                         context.Response.StatusCode = 404;
@@ -64,9 +66,17 @@ namespace Trill.Api
                     context.Response.ContentType = "application/json";
                     await context.Response.WriteAsync("{}");
                 });
+
+                endpoints.MapGet("stories", async context =>
+                {
+                    var storyService = context.RequestServices.GetRequiredService<IStoryService>();
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsync("[]");
+                });
                 
                 endpoints.MapPost("stories", async context =>
                 {
+                    var storyService = context.RequestServices.GetRequiredService<IStoryService>();
                     var storyId = Guid.NewGuid();
                     // Call application layer and save data...
                     context.Response.Headers.Add("Location", $"stories/{storyId}");

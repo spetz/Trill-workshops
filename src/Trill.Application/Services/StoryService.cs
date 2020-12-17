@@ -7,7 +7,7 @@ using Trill.Application.DTO;
 
 namespace Trill.Application.Services
 {
-    public class StoryService : IStoryService
+    internal class StoryService : IStoryService
     {
         // This is not thread-safe (use Concurrent collection)
         private static readonly List<StoryDetailsDto> Stories = new List<StoryDetailsDto>();
