@@ -24,9 +24,10 @@ namespace Trill.Api
         // Configure IoC container
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IMessenger, Messenger>();
-            services.AddSingleton<IMessenger, MessengerV2>();
+            services.AddScoped<IMessenger, Messenger>();
+            // services.AddSingleton<IMessenger, MessengerV2>();
             services.Configure<ApiOptions>(_configuration.GetSection("api"));
+            // services.AddHostedService<NotificationJob>();
         }
 
         // Configure middleware
