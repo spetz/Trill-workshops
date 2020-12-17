@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,18 @@ namespace Trill.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("", context => context.Response.WriteAsync("Hello world!"));
+                endpoints.MapGet("stories/{storyId:guid}", async context =>
+                {
+                    var storyId = Guid.Parse(context.Request.RouteValues["storyId"].ToString());
+                    if (storyId == Guid.Empty)
+                    {
+                        context.Response.StatusCode = 404;
+                        return;
+                    }
+                    
+                    context.Response.ContentType = "application/json";
+                    await context.Response.WriteAsync("{}");
+                });
             });
         }
     }
