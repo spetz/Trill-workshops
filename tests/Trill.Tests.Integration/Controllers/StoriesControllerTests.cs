@@ -7,14 +7,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Shouldly;
 using Trill.Api;
+using Trill.Application.DTO;
 using Trill.Core.Entities;
 using Trill.Core.Repositories;
 using Xunit;
 
 namespace Trill.Tests.Integration.Controllers
 {
+    // [Collection("stories")] // Run tests sequentially
     public class StoriesControllerTests : IClassFixture<WebApplicationFactory<Startup>>
     {
         [Fact]
@@ -34,6 +37,14 @@ namespace Trill.Tests.Integration.Controllers
             await _storyRepository.AddAsync(story);
             
             // Act
+            var response = await _client.GetAsync($"api/stories/{story.Id}");
+            
+            // Assert
+            response.EnsureSuccessStatusCode();
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            var dto = JsonConvert.DeserializeObject<StoryDetailsDto>(await response.Content.ReadAsStringAsync());
+            dto.ShouldNotBeNull();
+            dto.Id.ShouldBe(story.Id);
         }
 
         private readonly IStoryRepository _storyRepository;
