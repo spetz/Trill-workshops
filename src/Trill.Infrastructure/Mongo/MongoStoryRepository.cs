@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using Trill.Core.Entities;
 using Trill.Core.Repositories;
 
@@ -15,20 +17,27 @@ namespace Trill.Infrastructure.Mongo
         {
             _collection = database.GetCollection<StoryDocument>("stories");
         }
-        
-        public Task<Story> GetAsync(Guid id)
+
+        public async Task<Story> GetAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var story = await _collection
+                .AsQueryable()
+                .SingleOrDefaultAsync(d => d.Id == id);
+
+            return story?.ToEntity();
         }
 
-        public Task<IEnumerable<Story>> BrowseAsync(string author = null)
+        public async Task<IEnumerable<Story>> BrowseAsync(string author = null)
         {
-            throw new NotImplementedException();
+            var stories = await _collection
+                .AsQueryable()
+                .Where(x => author == null || x.Author == author)
+                .ToListAsync();
+
+            return stories.Select(x => x.ToEntity());
         }
 
         public Task AddAsync(Story story)
-        {
-            throw new NotImplementedException();
-        }
+            => _collection.InsertOneAsync(new StoryDocument(story));
     }
 }
