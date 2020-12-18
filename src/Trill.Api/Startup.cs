@@ -38,6 +38,7 @@ namespace Trill.Api
             // services.AddHostedService<NotificationJob>();
             services.AddSingleton<ErrorHandlerMiddleware>();
             services.AddApplication();
+            services.AddInfrastructure();
             services.AddSwaggerGen(swagger =>
             {
                 swagger.SwaggerDoc("v1", new OpenApiInfo
