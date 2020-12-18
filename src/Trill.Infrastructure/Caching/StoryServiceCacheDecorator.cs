@@ -19,19 +19,30 @@ namespace Trill.Infrastructure.Caching
             _cache = cache;
         }
         
-        public Task<StoryDetailsDto> GetAsync(Guid id)
+        public async Task<StoryDetailsDto> GetAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var key = GetCacheKey(id);
+            var dto = _cache.Get<StoryDetailsDto>(key);
+            if (dto is {})
+            {
+                return dto;
+            }
+
+            dto = await _storyService.GetAsync(id);
+            if (dto is null)
+            {
+                return null;
+            }
+        
+            _cache.Set(key, dto);
+
+            return dto;
         }
 
-        public Task<IEnumerable<StoryDto>> BrowseAsync(string author = null)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<IEnumerable<StoryDto>> BrowseAsync(string author = null) => _storyService.BrowseAsync(author);
 
-        public Task AddAsync(SendStory command)
-        {
-            throw new NotImplementedException();
-        }
+        public Task AddAsync(SendStory command) => _storyService.AddAsync(command);
+        
+        private static string GetCacheKey(Guid id) => $"stories:{id:N}";
     }
 }
