@@ -32,6 +32,7 @@ namespace Trill.Api
         // Configure IoC container
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers().AddNewtonsoftJson();
             services.Configure<ApiOptions>(_configuration.GetSection("api"));
             // services.AddHostedService<NotificationJob>();
             services.AddSingleton<ErrorHandlerMiddleware>();
@@ -56,10 +57,12 @@ namespace Trill.Api
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
+                
                 endpoints.MapGet("", context =>
                 {
                     var options = context.RequestServices.GetRequiredService<IOptions<ApiOptions>>();
-                    return context.Response.WriteAsync("Hello world!");
+                    return context.Response.WriteAsync(options.Value.Name);
                 });
                 
                 endpoints.MapGet("stories/{storyId:guid}", async context =>
