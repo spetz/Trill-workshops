@@ -6,6 +6,7 @@ using Shouldly;
 using Trill.Application.Commands;
 using Trill.Application.Services;
 using Trill.Core.Entities;
+using Trill.Core.Exceptions;
 using Trill.Core.Repositories;
 using Xunit;
 
@@ -46,6 +47,20 @@ namespace Trill.Tests.Unit.Services
                 x.Title == command.Title &&
                 x.Text == command.Text &&
                 x.Author == command.Author));
+        }
+
+        [Fact]
+        public async Task add_should_fail_given_missing_title()
+        {
+            // Arrange
+            var command = new SendStory(Guid.NewGuid(), default, "Lorem ipsum", "user1", new[] {"tag1", "tag2"});
+            
+            // Act
+            var exception = await Record.ExceptionAsync(() => _storyService.AddAsync(command));
+            
+            // Assert
+            exception.ShouldNotBeNull();
+            exception.ShouldBeOfType<MissingTitleException>();
         }
 
         private readonly IStoryRepository _storyRepository;
