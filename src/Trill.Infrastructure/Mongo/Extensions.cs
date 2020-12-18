@@ -12,7 +12,7 @@ namespace Trill.Infrastructure.Mongo
             IConfiguration configuration;
             using (var serviceProvider = services.BuildServiceProvider())
             {
-                configuration = serviceProvider.GetService<IConfiguration>();
+                configuration = serviceProvider.GetRequiredService<IConfiguration>();
             }
 
             services.Configure<MongoOptions>(configuration.GetSection("mongo"));

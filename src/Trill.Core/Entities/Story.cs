@@ -14,7 +14,7 @@ namespace Trill.Core.Entities
         public Author Author { get; private set; }
         public IEnumerable<string> Tags { get; private set; }
         public DateTime CreatedAt { get; private set; }
-
+        
         public Story(Guid id, string title, string text, Author author, IEnumerable<string> tags, DateTime createdAt)
         {
             if (string.IsNullOrWhiteSpace(title))
