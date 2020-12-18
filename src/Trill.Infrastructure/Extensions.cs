@@ -16,7 +16,13 @@ namespace Trill.Infrastructure
             services.Decorate<IStoryService, StoryServiceCacheDecorator>();
             services.AddMongo();
             services.AddJwt();
-            services.AddAuthorization();
+            services.AddAuthorization(a =>
+            {
+                a.AddPolicy("read-secret", p =>
+                {
+                    p.RequireClaim("permissions", "secret:read");
+                });
+            });
             
             return services;
         }
