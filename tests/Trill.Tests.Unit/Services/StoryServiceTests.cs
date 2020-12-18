@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Shouldly;
+using Trill.Application.Commands;
 using Trill.Application.Services;
 using Trill.Core.Entities;
 using Trill.Core.Repositories;
@@ -28,6 +29,23 @@ namespace Trill.Tests.Unit.Services
             dto.Id.ShouldBe(story.Id);
             dto.Title.ShouldBe(story.Title);
             await _storyRepository.Received(1).GetAsync(story.Id);
+        }
+        
+        [Fact]
+        public async Task add_should_succeed_given_valid_data()
+        {
+            // Arrange
+            var command = new SendStory(Guid.NewGuid(), "test", "Lorem ipsum", "user1", new[] {"tag1", "tag2"});
+            
+            // Act
+            await _storyService.AddAsync(command);
+            
+            // Assert
+            await _storyRepository.Received(1).AddAsync(Arg.Is<Story>(x =>
+                x.Id == command.Id &&
+                x.Title == command.Title &&
+                x.Text == command.Text &&
+                x.Author == command.Author));
         }
 
         private readonly IStoryRepository _storyRepository;
