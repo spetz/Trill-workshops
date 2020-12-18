@@ -1,5 +1,5 @@
-@url = http://localhost:5000
-@storyId = 00000000-0000-0000-0000-000000000000
+@url = http://localhost:5000/api
+@storyId = 98b8511a-413d-44c8-80bd-cb332bdd3507
 
 ###
 GET {{url}}
@@ -11,7 +11,7 @@ GET {{url}}/stories
 GET {{url}}/stories/{{storyId}}
 
 ###
-POST {{url}}/api/stories
+POST {{url}}/stories
 Content-Type: application/json
 
 {

@@ -9,7 +9,10 @@ namespace Trill.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
+            services.AddMemoryCache();
             services.AddScoped<IStoryRepository, InMemoryStoryRepository>();
+            services.Decorate<IStoryService, StoryServiceCacheDecorator>();
+            
             return services;
         }
     }
