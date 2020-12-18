@@ -11,7 +11,7 @@ GET {{url}}/stories
 GET {{url}}/stories/{{storyId}}
 
 ###
-POST {{url}}/stories
+POST {{url}}/api/stories
 Content-Type: application/json
 
 {
