@@ -58,7 +58,11 @@ namespace Trill.Api
             {
                 swagger.SwaggerEndpoint("/swagger/v1/swagger.json", "Trill API v1");
             });
+
+            app.UseAuthentication();
             app.UseRouting();
+            app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
