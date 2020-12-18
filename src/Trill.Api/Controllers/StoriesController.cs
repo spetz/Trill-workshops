@@ -24,7 +24,9 @@ namespace Trill.Api.Controllers
             => Ok(await _storyService.BrowseAsync(author));
     
         [HttpGet("{storyId:guid}")]
-        public async Task<ActionResult<StoryDto>> Get(Guid storyId)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<StoryDetailsDto>> Get(Guid storyId)
         {
             var story = await _storyService.GetAsync(storyId);
             if (story is null)
@@ -36,6 +38,8 @@ namespace Trill.Api.Controllers
         }
     
         [HttpPost]
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
         public async Task<ActionResult> Post(SendStory command)
         {
             await _storyService.AddAsync(command);

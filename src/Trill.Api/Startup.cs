@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Trill.Application;
@@ -37,23 +38,25 @@ namespace Trill.Api
             // services.AddHostedService<NotificationJob>();
             services.AddSingleton<ErrorHandlerMiddleware>();
             services.AddApplication();
+            services.AddSwaggerGen(swagger =>
+            {
+                swagger.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Trill API",
+                    Version = "v1"
+                });
+            });
         }
 
         // Configure middleware
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseMiddleware<ErrorHandlerMiddleware>();
-            app.Use(async (ctx, next) =>
+            app.UseSwagger();
+            app.UseSwaggerUI(swagger =>
             {
-                if (ctx.Request.Query.TryGetValue("token", out var token) && token == "secret")
-                {
-                    await ctx.Response.WriteAsync("Secret");
-                    return;
-                }
-
-                await next();
+                swagger.SwaggerEndpoint("/swagger/v1/swagger.json", "Trill API v1");
             });
-
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
